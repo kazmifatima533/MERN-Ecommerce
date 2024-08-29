@@ -5,7 +5,6 @@ import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
 
 const Collection = () => {
-
   const { products, search, showSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
@@ -15,17 +14,17 @@ const Collection = () => {
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
-      setCategory(prev => prev.filter(item => item !== e.target.value))
+      setCategory(prev => prev.filter(item => item !== e.target.value));
     } else {
-      setCategory(prev => [...prev, e.target.value])
+      setCategory(prev => [...prev, e.target.value]);
     }
   }
 
   const toggleSubCategory = (e) => {
     if (subCategory.includes(e.target.value)) {
-      setSubCategory(prev => prev.filter(item => item !== e.target.value))
+      setSubCategory(prev => prev.filter(item => item !== e.target.value));
     } else {
-      setSubCategory(prev => [...prev, e.target.value])
+      setSubCategory(prev => [...prev, e.target.value]);
     }
   }
 
@@ -52,15 +51,14 @@ const Collection = () => {
     switch (sortType) {
       case 'low-high':
         setFilterProducts(fpCopy.sort((a, b) => (a.price - b.price)));
-      break;
+        break;
       case 'high-low':
         setFilterProducts(fpCopy.sort((a, b) => (b.price - a.price)));
-      break;
+        break;
       default:
         applyFilter();
-      break;
+        break;
     }
-    
   }
 
   const clearFilters = () => {
@@ -81,9 +79,16 @@ const Collection = () => {
       
       {/* Filter Options */}
       <div className='min-w-60'>
-        <p onClick={() => setShowFilter(!showFilter)} className='flex items-center gap-2 my-2 text-xl cursor-pointer'>
+        <p 
+          onClick={() => setShowFilter(!showFilter)} 
+          className='flex items-center gap-2 my-2 text-xl cursor-pointer'
+        >
           FILTERS
-          <img className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`} src={assets.dropdown_icon} alt="Dropdown" />
+          <img 
+            className={`h-3 sm:hidden ${showFilter ? 'rotate-90' : ''}`} 
+            src={assets.dropdown_icon} 
+            alt="Dropdown" 
+          />
         </p>
         {/* Category Filters */}
         <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
@@ -157,8 +162,9 @@ const Collection = () => {
             </label>
           </div>
         </div>
+        {/* Clear Filters Button */}
         <button 
-          className="px-4 py-2 mt-1 text-white bg-black rounded hover:bg-gray-900"
+          className={`px-4 py-2 mt-1 text-white bg-black rounded hover:bg-gray-900 ${showFilter ? 'block' : 'hidden'} sm:block`}
           onClick={clearFilters}
         >
           Clear Filters
