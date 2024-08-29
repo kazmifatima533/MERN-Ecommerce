@@ -12,7 +12,9 @@ const ProductItem = ({id, image, name, price}) => {
         <img className='transition ease-in-out hover:scale-110' src={image[0]} alt="Product" />
       </div>
       <p className='pt-3 pb-1 text-sm'>{name}</p>
-      <p className='text-sm font-medium'>{currency}{price}</p>
+      <p className='text-sm font-medium'>
+        {currency}&nbsp;{price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </p>
     </Link>
   )
 }
