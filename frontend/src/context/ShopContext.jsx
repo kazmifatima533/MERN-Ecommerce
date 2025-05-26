@@ -9,25 +9,33 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
   const currency = "$";
   const delivery_fee = 10;
 
   useEffect(() => {
-    // INFO: Load cart items from localStorage when the component mounts
     const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));
     if (storedCartItems) {
       setCartItems(storedCartItems);
     }
+
+    const storedOrders = JSON.parse(localStorage.getItem("orders"));
+    if (storedOrders) {
+      setOrders(storedOrders);
+    }
   }, []);
 
   useEffect(() => {
-    // INFO: Save cart items to localStorage whenever cartItems changes
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = async (itemId, size) => {
+  useEffect(() => {
+    localStorage.setItem("orders", JSON.stringify(orders));
+  }, [orders]);
+
+  const addToCart = (itemId, size) => {
     if (!size) {
       toast.error("Please Select a Size");
       return;
@@ -51,48 +59,75 @@ const ShopContextProvider = (props) => {
     setCartItems(cartData);
   };
 
+  const updateQuantity = (itemId, size, quantity) => {
+    let cartData = structuredClone(cartItems);
+
+    if (quantity === 0) {
+      delete cartData[itemId][size];
+      toast.success("Item Removed From The Cart");
+
+      if (Object.keys(cartData[itemId]).length === 0) {
+        delete cartData[itemId];
+      }
+    } else {
+      cartData[itemId][size] = quantity;
+    }
+
+    setCartItems(cartData);
+  };
+
   const getCartCount = () => {
     let totalCount = 0;
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            totalCount += cartItems[items][item];
-          }
-        } catch (error) {
-          // INFO: Error Handling
-        }
+    for (const productId in cartItems) {
+      for (const size in cartItems[productId]) {
+        totalCount += cartItems[productId][size];
       }
     }
     return totalCount;
   };
 
-  const updateQuantity = async (itemId, size, quantity) => {
-    if (quantity === 0) {
-      const productData = products.find((product) => product._id === itemId);
-      toast.success("Item Removed From The Cart");
-    }
-
-    let cartData = structuredClone(cartItems);
-
-    cartData[itemId][size] = quantity;
-
-    setCartItems(cartData);
-  };
-
   const getCartAmount = () => {
     let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            totalAmount += itemInfo.price * cartItems[items][item];
-          }
-        } catch (error) {}
+    for (const productId in cartItems) {
+      let itemInfo = products.find((product) => product._id === productId);
+      for (const size in cartItems[productId]) {
+        totalAmount += itemInfo.price * cartItems[productId][size];
       }
     }
     return totalAmount;
+  };
+
+  const placeOrder = () => {
+    const newOrders = [];
+
+    Object.keys(cartItems).forEach((productId) => {
+      const item = products.find((p) => p._id === productId);
+      if (!item) return;
+
+      Object.entries(cartItems[productId]).forEach(([size, quantity]) => {
+        if (quantity > 0) {
+          newOrders.push({
+            id: Date.now().toString() + Math.random(),
+            productId,
+            quantity,
+            size,
+            date: new Date().toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }),
+          });
+        }
+      });
+    });
+
+    if (newOrders.length > 0) {
+      setOrders((prev) => [...prev, ...newOrders]);
+      setCartItems({});
+      toast.success("Order placed successfully!");
+    } else {
+      toast.error("No items to order.");
+    }
   };
 
   const value = {
@@ -108,11 +143,15 @@ const ShopContextProvider = (props) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
+    orders,
+    placeOrder,
     navigate,
   };
 
   return (
-    <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
+    <ShopContext.Provider value={value}>
+      {props.children}
+    </ShopContext.Provider>
   );
 };
 

@@ -17,9 +17,11 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState("");
   const [sizes, setSizes] = useState([]);
   const [bestSeller, setBestSeller] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
 
@@ -52,6 +54,7 @@ const Add = ({ token }) => {
       console.error(error);
       toast.error("Something went wrong");
     }
+    setIsSubmitting(false);
   };
 
   const resetForm = () => {
@@ -76,64 +79,29 @@ const Add = ({ token }) => {
       <div>
         <p className="mb-2 text-lg font-semibold">Upload Product Image(s)</p>
         <div className="flex gap-2">
-          <label htmlFor="image1">
-            <img
-              className="w-20 border-2 border-gray-500 rounded-lg cursor-pointer"
-              src={!image1 ? assets.upload_area : URL.createObjectURL(image1)}
-              alt="Upload Images"
-            />
-            <input
-              onChange={(e) => setImage1(e.target.files[0])}
-              type="file"
-              id="image1"
-              hidden
-              accept="image/*"
-            />
-          </label>
-          <label htmlFor="image2">
-            <img
-              className="w-20 border-2 border-gray-500 rounded-lg cursor-pointer"
-              src={!image2 ? assets.upload_area : URL.createObjectURL(image2)}
-              alt="Upload Images"
-            />
-            <input
-              onChange={(e) => setImage2(e.target.files[0])}
-              type="file"
-              id="image2"
-              hidden
-              accept="image/*"
-            />
-          </label>
-          <label htmlFor="image3">
-            <img
-              className="w-20 border-2 border-gray-500 rounded-lg cursor-pointer"
-              src={!image3 ? assets.upload_area : URL.createObjectURL(image3)}
-              alt="Upload Images"
-            />
-            <input
-              onChange={(e) => setImage3(e.target.files[0])}
-              type="file"
-              id="image3"
-              hidden
-              accept="image/*"
-            />
-          </label>
-          <label htmlFor="image4">
-            <img
-              className="w-20 border-2 border-gray-500 rounded-lg cursor-pointer"
-              src={!image4 ? assets.upload_area : URL.createObjectURL(image4)}
-              alt="Upload Images"
-            />
-            <input
-              onChange={(e) => setImage4(e.target.files[0])}
-              type="file"
-              id="image4"
-              hidden
-              accept="image/*"
-            />
-          </label>
+          {[image1, image2, image3, image4].map((img, idx) => {
+            const setter = [setImage1, setImage2, setImage3, setImage4][idx];
+            const id = `image${idx + 1}`;
+            return (
+              <label key={id} htmlFor={id}>
+                <img
+                  className="w-20 border-2 border-gray-500 rounded-lg cursor-pointer"
+                  src={!img ? assets.upload_area : URL.createObjectURL(img)}
+                  alt="Upload"
+                />
+                <input
+                  type="file"
+                  id={id}
+                  hidden
+                  accept="image/*"
+                  onChange={(e) => setter(e.target.files[0])}
+                />
+              </label>
+            );
+          })}
         </div>
       </div>
+
       <div className="w-full mt-2">
         <p className="mb-2 text-lg font-semibold">Product Item Name</p>
         <input
@@ -145,17 +113,18 @@ const Add = ({ token }) => {
           required
         />
       </div>
+
       <div className="w-full mt-2">
         <p className="mb-2 text-lg font-semibold">Product Item Description</p>
         <textarea
           onChange={(e) => setDescription(e.target.value)}
           value={description}
           className="w-full px-3 py-2 border-gray-500 max-w-[500px]"
-          type="text"
           placeholder="Enter Product Description"
           required
         />
       </div>
+
       <div className="flex flex-col w-full gap-2 sm:flex-row sm:gap-8">
         <div>
           <p className="mb-2 text-lg font-semibold">Product Category</p>
@@ -171,6 +140,7 @@ const Add = ({ token }) => {
             <option value="Kids">Kids</option>
           </select>
         </div>
+
         <div>
           <p className="mb-2 text-lg font-semibold">Product Sub Category</p>
           <select
@@ -185,6 +155,7 @@ const Add = ({ token }) => {
             <option value="Winterwear">Winterwear</option>
           </select>
         </div>
+
         <div>
           <p className="mb-2 text-lg font-semibold">Product Price</p>
           <input
@@ -197,6 +168,7 @@ const Add = ({ token }) => {
           />
         </div>
       </div>
+
       <div>
         <p className="mb-2 text-lg font-semibold">Product Sizes</p>
         <div className="flex gap-3">
@@ -210,13 +182,14 @@ const Add = ({ token }) => {
                     : [...prev, size]
                 )
               }
+              className="cursor-pointer"
             >
               <p
                 className={`${
                   sizes.includes(size)
                     ? "bg-gray-500 text-white rounded-md"
                     : "bg-slate-200"
-                } px-3 py-1 cursor-pointer`}
+                } px-3 py-1`}
               >
                 {size}
               </p>
@@ -224,6 +197,7 @@ const Add = ({ token }) => {
           ))}
         </div>
       </div>
+
       <div className="flex gap-2 mt-2">
         <input
           type="checkbox"
@@ -235,12 +209,16 @@ const Add = ({ token }) => {
           Add to Best Seller
         </label>
       </div>
+
       <div className="flex flex-col w-full gap-2 sm:flex-row sm:gap-8">
         <button
           type="submit"
-          className="px-5 py-2 mt-2 text-white rounded-lg bg-slate-700"
+          className={`px-5 py-2 mt-2 text-white rounded-lg ${
+            isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-slate-700"
+          }`}
+          disabled={isSubmitting}
         >
-          Add Product
+          {isSubmitting ? "Adding..." : "Add Product"}
         </button>
         <button
           type="button"

@@ -10,6 +10,7 @@ import adminAuth from "../middleware/adminAuth.js";
 
 const productRouter = express.Router();
 
+// Route to add a product (admin only, with image upload)
 productRouter.post(
   "/add",
   adminAuth,
@@ -21,8 +22,14 @@ productRouter.post(
   ]),
   addProduct
 );
+
+// Route to remove a product (admin only)
 productRouter.post("/remove", adminAuth, removeProduct);
+
+// Route to get a single product by ID
 productRouter.post("/single", getSingleProduct);
+
+// Route to list all products
 productRouter.get("/list", listProducts);
 
 export default productRouter;

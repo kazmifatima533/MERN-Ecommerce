@@ -40,13 +40,6 @@ const NavBar = () => {
                 <Link to='/login'>
                     <img src={assets.profile_icon} className='w-5 cursor-pointer' alt="Your Profile" />
                 </Link>
-                <div className='absolute right-0 hidden pt-4 group-hover:block dropdown-menu'>
-                    <div className='flex flex-col gap-2 px-5 py-3 text-gray-500 rounded w-36 bg-slate-100'>
-                        <p className='cursor-pointer hover:text-black'>Profile</p>
-                        <p className='cursor-pointer hover:text-black'>Orders</p>
-                        <p className='cursor-pointer hover:text-black'>Logout</p>
-                    </div>
-                </div>
             </div>
             <Link to='/cart' className='relative'>
                 <img src={assets.cart_icon} className='w-5 min-w-5' alt="Cart" />
