@@ -22,6 +22,12 @@ connectCloudinary();
 // INFO: Middleware
 app.use(express.json());
 app.use(cors());
+app.use(cors({
+  origin: [process.env.Domin_ulr1, process.env.Domin_ulr2,], // Array of allowed origins (strings or regex)
+  credentials: true, // Allow cookies and other auth data
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+}));
 
 // ✅ Serve static files from /uploads
 app.use("/uploads", express.static(path.resolve("uploads")));

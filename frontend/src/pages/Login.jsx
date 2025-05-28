@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { backendUrl } from "../../../admin/src/App";
 const Login = () => {
   const [currentState, setCurrentState] = useState("Sign Up"); // default is "Sign Up"
   const [name, setName] = useState("");
@@ -19,8 +19,8 @@ const Login = () => {
     try {
       const endpoint =
         currentState === "Login"
-          ? "http://localhost:4000/api/user/login"
-          : "http://localhost:4000/api/user/register"; // Set endpoint depending on current state (Login or SignUp)
+          ? backendUrl+"/api/user/login"
+          : backendUrl+"/api/user/register"; // Set endpoint depending on current state (Login or SignUp)
 
       const payload =
         currentState === "Login"
